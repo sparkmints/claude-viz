@@ -174,7 +174,7 @@ function getUnifiedHTML(): string {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Claude Code Visualizers</title>
+      <title>Claude Viz</title>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
       <style>
@@ -251,12 +251,49 @@ function getUnifiedHTML(): string {
 
         /* Plans Tab Styles */
         .sidebar {
-          width: 250px;
+          width: 280px;
           float: left;
           margin-right: 20px;
           background: #252526;
           padding: 15px;
           border-radius: 8px;
+        }
+        .plan-outline {
+          margin-top: 20px;
+          padding-top: 15px;
+          border-top: 1px solid #3e3e42;
+        }
+        .plan-outline h3 {
+          font-size: 14px;
+          color: #858585;
+          margin-bottom: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .outline-list {
+          list-style: none;
+        }
+        .outline-item {
+          padding: 6px 0;
+          color: #858585;
+          font-size: 13px;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        .outline-item:hover {
+          color: #569cd6;
+        }
+        .outline-item.level-1 {
+          padding-left: 0;
+          font-weight: 500;
+          color: #d4d4d4;
+        }
+        .outline-item.level-2 {
+          padding-left: 12px;
+        }
+        .outline-item.level-3 {
+          padding-left: 24px;
+          font-size: 12px;
         }
         .sidebar h2 { font-size: 16px; margin-bottom: 10px; }
         .plan-list { list-style: none; }
@@ -276,7 +313,7 @@ function getUnifiedHTML(): string {
           font-style: italic;
         }
         .main-content {
-          margin-left: 270px;
+          margin-left: 300px;
           background: #252526;
           padding: 20px;
           border-radius: 8px;
@@ -336,16 +373,27 @@ function getUnifiedHTML(): string {
         }
         .live-indicator {
           display: inline-block;
-          width: 8px;
-          height: 8px;
-          background: #4fc3f7;
+          width: 12px;
+          height: 12px;
+          background: #f97316;
           border-radius: 50%;
-          margin-right: 6px;
-          animation: blink 2s infinite;
+          margin-right: 8px;
+          animation: blink 1.5s infinite;
+          box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
         }
         @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
+          0% {
+            opacity: 1;
+            box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
+          }
+          50% {
+            opacity: 0.7;
+            box-shadow: 0 0 8px 4px rgba(249, 115, 22, 0.4);
+          }
+          100% {
+            opacity: 1;
+            box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7);
+          }
         }
         .session-selector {
           display: flex;
@@ -391,21 +439,40 @@ function getUnifiedHTML(): string {
         .stat-card.completed .stat-value { color: #4fc3f7; }
         .stat-card.total .stat-value { color: #ce9178; }
         .progress-bar {
-          height: 30px;
+          height: 8px;
           background: #2d2d30;
-          border-radius: 15px;
+          border-radius: 4px;
           overflow: hidden;
           margin-bottom: 30px;
+          position: relative;
         }
         .progress-fill {
           height: 100%;
-          background: linear-gradient(90deg, #0e639c 0%, #4fc3f7 100%);
-          transition: width 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          color: white;
+          background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 50%, #10b981 100%);
+          transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .progress-fill::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+          animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .progress-text {
+          text-align: center;
+          font-size: 12px;
+          color: #858585;
+          margin-top: 8px;
+          font-weight: 500;
         }
         .kanban {
           display: grid;
@@ -456,8 +523,17 @@ function getUnifiedHTML(): string {
         }
         .empty-state {
           text-align: center;
-          padding: 40px;
+          padding: 60px 20px;
           color: #858585;
+          font-size: 14px;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 8px;
+          border: 1px dashed #3e3e42;
+        }
+        .empty-state-icon {
+          font-size: 32px;
+          margin-bottom: 12px;
+          opacity: 0.5;
         }
         .loading {
           text-align: center;
@@ -469,7 +545,7 @@ function getUnifiedHTML(): string {
     <body>
       <!-- Tab Navigation -->
       <div class="tab-nav">
-        <h1>🎯 Claude Code Visualizers</h1>
+        <h1>👀 Claude Viz</h1>
         <div class="tabs">
           <button class="tab-button active" data-tab="plans">📋 Plans</button>
           <button class="tab-button" data-tab="todos">✅ Todos</button>
@@ -484,6 +560,10 @@ function getUnifiedHTML(): string {
             <ul class="plan-list" id="planList">
               <li class="loading">Loading plans...</li>
             </ul>
+            <div class="plan-outline" id="planOutline" style="display: none;">
+              <h3>Outline</h3>
+              <ul class="outline-list" id="outlineList"></ul>
+            </div>
           </div>
           <div class="main-content">
             <div id="planContent" class="plan-content">
@@ -527,8 +607,9 @@ function getUnifiedHTML(): string {
             </div>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
           </div>
+          <div class="progress-text" id="progressText">0% Complete</div>
           <div class="kanban">
             <div class="column pending">
               <div class="column-header">📝 Pending</div>
@@ -677,6 +758,36 @@ function getUnifiedHTML(): string {
           document.querySelectorAll('#planContent pre code').forEach((block) => {
             hljs.highlightElement(block);
           });
+
+          // Show outline
+          const outlineContainer = document.getElementById('planOutline');
+          const outlineList = document.getElementById('outlineList');
+
+          if (plan.parsed.sections && plan.parsed.sections.length > 0) {
+            outlineList.innerHTML = plan.parsed.sections
+              .filter(s => s.level <= 3) // Only show up to h3
+              .map(section => \`
+                <li class="outline-item level-\${section.level}" data-id="\${section.id}">
+                  \${section.title}
+                </li>
+              \`)
+              .join('');
+
+            // Add click handlers for outline navigation
+            document.querySelectorAll('.outline-item').forEach(item => {
+              item.addEventListener('click', () => {
+                const id = item.dataset.id;
+                const element = document.getElementById(id);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              });
+            });
+
+            outlineContainer.style.display = 'block';
+          } else {
+            outlineContainer.style.display = 'none';
+          }
         }
 
         // ===== TODOS TAB =====
@@ -698,6 +809,9 @@ function getUnifiedHTML(): string {
           const timestamp = task.timestamp || now;
           const relativeTime = formatRelativeTime(timestamp);
 
+          // Use activeForm (present tense) only for in-progress tasks
+          const displayText = task.status === 'in_progress' ? task.activeForm : task.content;
+
           // Calculate duration for completed tasks
           let durationHtml = '';
           if (task.status === 'completed' && task.timestamp) {
@@ -708,8 +822,7 @@ function getUnifiedHTML(): string {
 
           return \`
             <div class="task-card \${task.status}">
-              <div class="task-content">\${task.content}</div>
-              <div class="task-active">\${task.activeForm}</div>
+              <div class="task-content">\${displayText}</div>
               \${durationHtml ? \`<div class="task-timestamp">\${durationHtml}</div>\` : ''}
             </div>
           \`;
@@ -722,15 +835,15 @@ function getUnifiedHTML(): string {
 
           document.getElementById('columnPending').innerHTML = pending.length
             ? pending.map(renderTask).join('')
-            : '<div class="empty-state">No pending tasks</div>';
+            : '<div class="empty-state"><div class="empty-state-icon">📝</div>No pending tasks</div>';
 
           document.getElementById('columnInProgress').innerHTML = inProgress.length
             ? inProgress.map(renderTask).join('')
-            : '<div class="empty-state">No tasks in progress</div>';
+            : '<div class="empty-state"><div class="empty-state-icon">⚡</div>No tasks in progress</div>';
 
           document.getElementById('columnCompleted').innerHTML = completed.length
             ? completed.map(renderTask).join('')
-            : '<div class="empty-state">No completed tasks</div>';
+            : '<div class="empty-state"><div class="empty-state-icon">✨</div>No completed tasks yet</div>';
         }
 
         function updateStats(state) {
@@ -746,8 +859,9 @@ function getUnifiedHTML(): string {
           document.getElementById('statCompleted').textContent = completed;
 
           const progressFill = document.getElementById('progressFill');
+          const progressText = document.getElementById('progressText');
           progressFill.style.width = \`\${percentage}%\`;
-          progressFill.textContent = \`\${percentage}%\`;
+          progressText.textContent = \`\${percentage}% Complete (\${completed}/\${total})\`;
         }
 
         async function loadSessions() {

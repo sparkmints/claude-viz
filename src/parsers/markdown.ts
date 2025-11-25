@@ -1,4 +1,4 @@
-import { marked } from 'marked';
+import { marked, Renderer } from 'marked';
 import { ParsedPlan, PlanSection } from '../types';
 
 /**
@@ -52,8 +52,14 @@ export async function parsePlan(markdown: string): Promise<ParsedPlan> {
     sections.push(currentSection);
   }
 
-  // Convert markdown to HTML
-  const html = await marked(markdown);
+  // Convert markdown to HTML with heading IDs
+  const renderer = new Renderer();
+  renderer.heading = function(text: string, level: number) {
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return `<h${level} id="${id}">${text}</h${level}>\n`;
+  };
+
+  const html = await marked(markdown, { renderer });
 
   return {
     html,
