@@ -4,7 +4,7 @@
   "description": "Live web dashboards for Claude Code's planning and task tracking",
   "main": "./dist/cli.js",
   "bin": {
-    "claude-viz": "./dist/cli.js"
+    "claude-viz": "dist/cli.js"
   },
   "files": [
     "dist"
