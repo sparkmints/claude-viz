@@ -3,7 +3,7 @@ import path from 'path';
 import os from 'os';
 import chokidar from 'chokidar';
 import { EventEmitter } from 'events';
-import { TodoState, TodoStats } from '../types';
+import { TodoState, TodoStats } from '../types.js';
 
 export class TodoWatcher extends EventEmitter {
   private watcher: chokidar.FSWatcher | null = null;

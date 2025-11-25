@@ -1,5 +1,5 @@
 import { marked, Renderer } from 'marked';
-import { ParsedPlan, PlanSection } from '../types';
+import { ParsedPlan, PlanSection } from '../types.js';
 
 /**
  * Parse markdown plan into structured format

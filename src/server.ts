@@ -1,9 +1,13 @@
 import express from 'express';
 import path from 'path';
-import { PlanWatcher } from './watchers/plan-watcher';
-import { TodoWatcher } from './watchers/todo-watcher';
-import { parsePlan } from './parsers/markdown';
-import { PlanUpdate, PlanHistory, TodoState } from './types';
+import { fileURLToPath } from 'url';
+import { PlanWatcher } from './watchers/plan-watcher.js';
+import { TodoWatcher } from './watchers/todo-watcher.js';
+import { parsePlan } from './parsers/markdown.js';
+import { PlanUpdate, PlanHistory, TodoState } from './types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function startServer(port: number = 8888): void {
   const app = express();

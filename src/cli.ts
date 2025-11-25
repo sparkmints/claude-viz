@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import open from 'open';
-import { startServer } from './server';
+import { startServer } from './server.js';
 
 const args = process.argv.slice(2);
 
