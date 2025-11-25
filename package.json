@@ -1,5 +1,5 @@
 {
-  "name": "@sparkmints/claude-viz",
+  "name": "claude-viz",
   "version": "0.1.0",
   "description": "Live web dashboards for Claude Code's planning and task tracking",
   "main": "./dist/cli.js",
@@ -21,7 +21,7 @@
     "developer-tools",
     "observability"
   ],
-  "author": "Sparkmint",
+  "author": "Sparkmint AB",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
