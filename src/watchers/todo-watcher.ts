@@ -163,14 +163,11 @@ export class TodoWatcher extends EventEmitter {
         })
       );
 
-      const now = Date.now();
-      const oneDayMs = 24 * 60 * 60 * 1000;
-
-      // Filter: include sessions with tasks OR sessions from last 24 hours
+      // Show all sessions with tasks, sorted by most recent
       return sessions
-        .filter(s => s.taskCount > 0 || (now - s.lastUpdated < oneDayMs))
+        .filter(s => s.taskCount > 0) // Only show sessions with actual tasks
         .sort((a, b) => b.lastUpdated - a.lastUpdated)
-        .slice(0, 30); // Keep last 30 sessions
+        .slice(0, 50); // Keep last 50 sessions with tasks
     } catch (error) {
       console.error('Error listing sessions:', error);
       return [];

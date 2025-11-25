@@ -175,6 +175,8 @@ function getUnifiedHTML(): string {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Claude Code Visualizers</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -220,6 +222,21 @@ function getUnifiedHTML(): string {
           color: #569cd6;
           border-bottom-color: #569cd6;
         }
+        .tab-badge {
+          display: inline-block;
+          background: #d73a49;
+          color: white;
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 10px;
+          margin-left: 6px;
+          font-weight: bold;
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
 
         /* Tab Content */
         .tab-content {
@@ -252,6 +269,12 @@ function getUnifiedHTML(): string {
         }
         .plan-list li:hover { background: #37373d; }
         .plan-list li.active { background: #094771; }
+        .plan-filename { display: block; margin-bottom: 4px; }
+        .plan-timestamp {
+          font-size: 11px;
+          color: #858585;
+          font-style: italic;
+        }
         .main-content {
           margin-left: 270px;
           background: #252526;
@@ -270,12 +293,23 @@ function getUnifiedHTML(): string {
         }
         .plan-content pre {
           background: #1e1e1e;
-          padding: 15px;
+          padding: 0;
           border-radius: 6px;
           overflow-x: auto;
           margin: 15px 0;
         }
-        .plan-content pre code { background: none; padding: 0; }
+        .plan-content pre code {
+          background: none;
+          padding: 15px;
+          display: block;
+        }
+        .plan-content blockquote {
+          border-left: 4px solid #569cd6;
+          margin: 15px 0;
+          padding-left: 15px;
+          color: #d4d4d4;
+          font-style: italic;
+        }
         .plan-content ul, .plan-content ol { margin-left: 20px; margin-bottom: 15px; }
         .plan-content li { margin-bottom: 8px; }
         .plan-content table {
@@ -296,6 +330,22 @@ function getUnifiedHTML(): string {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 20px;
+        }
+        .todo-header.historical {
+          opacity: 0.8;
+        }
+        .live-indicator {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          background: #4fc3f7;
+          border-radius: 50%;
+          margin-right: 6px;
+          animation: blink 2s infinite;
+        }
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
         }
         .session-selector {
           display: flex;
@@ -394,8 +444,15 @@ function getUnifiedHTML(): string {
         .task-active { font-size: 12px; color: #858585; font-style: italic; }
         .task-timestamp {
           font-size: 11px;
-          color: #5a5a5a;
+          color: #858585;
           margin-top: 8px;
+          display: flex;
+          gap: 10px;
+        }
+        .task-timestamp-item {
+          display: flex;
+          align-items: center;
+          gap: 4px;
         }
         .empty-state {
           text-align: center;
@@ -439,8 +496,11 @@ function getUnifiedHTML(): string {
       <!-- Todos Tab -->
       <div id="todos-tab" class="tab-content">
         <div class="container">
-          <div class="todo-header">
-            <h2 style="color: #569cd6; font-size: 20px; margin: 0;">TodoWrite Kanban</h2>
+          <div class="todo-header" id="todoHeader">
+            <h2 style="color: #569cd6; font-size: 20px; margin: 0;">
+              <span class="live-indicator" id="liveIndicator" style="display: none;"></span>
+              <span id="todoHeaderText">TodoWrite Kanban</span>
+            </h2>
             <div class="session-selector">
               <label>Session:</label>
               <select id="sessionSelector">
@@ -493,9 +553,44 @@ function getUnifiedHTML(): string {
       </div>
 
       <script>
+        // Utility: Format relative time
+        function formatRelativeTime(timestamp) {
+          const now = Date.now();
+          const diff = now - timestamp;
+          const seconds = Math.floor(diff / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+          const days = Math.floor(hours / 24);
+
+          if (seconds < 60) return 'just now';
+          if (minutes < 60) return \`\${minutes}m ago\`;
+          if (hours < 24) return \`\${hours}h ago\`;
+          if (days < 7) return \`\${days}d ago\`;
+          return new Date(timestamp).toLocaleDateString();
+        }
+
         // Tab Management
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
+        let todoBadgeCount = 0;
+
+        function updateTodoBadge(count) {
+          const todoButton = document.querySelector('[data-tab="todos"]');
+          const existingBadge = todoButton.querySelector('.tab-badge');
+
+          if (count > 0) {
+            if (existingBadge) {
+              existingBadge.textContent = count;
+            } else {
+              const badge = document.createElement('span');
+              badge.className = 'tab-badge';
+              badge.textContent = count;
+              todoButton.appendChild(badge);
+            }
+          } else if (existingBadge) {
+            existingBadge.remove();
+          }
+        }
 
         function switchTab(tabName) {
           // Update buttons
@@ -513,11 +608,13 @@ function getUnifiedHTML(): string {
           url.searchParams.set('tab', tabName);
           history.replaceState({}, '', url);
 
-          // Load tab data if needed
-          if (tabName === 'plans') {
-            loadPlansTab();
-          } else if (tabName === 'todos') {
+          // Clear badge when switching to todos
+          if (tabName === 'todos') {
+            todoBadgeCount = 0;
+            updateTodoBadge(0);
             loadTodosTab();
+          } else if (tabName === 'plans') {
+            loadPlansTab();
           }
         }
 
@@ -543,9 +640,12 @@ function getUnifiedHTML(): string {
           const plans = await res.json();
 
           const planList = document.getElementById('planList');
-          planList.innerHTML = plans.map(plan =>
-            \`<li data-filename="\${plan.filename}">\${plan.filename}</li>\`
-          ).join('') || '<li class="loading">No plans found</li>';
+          planList.innerHTML = plans.map(plan => \`
+            <li data-filename="\${plan.filename}">
+              <div class="plan-filename">\${plan.filename}</div>
+              <div class="plan-timestamp">\${formatRelativeTime(plan.lastModified)}</div>
+            </li>
+          \`).join('') || '<li class="loading">No plans found</li>';
 
           // Add click handlers
           document.querySelectorAll('.plan-list li').forEach(li => {
@@ -572,26 +672,45 @@ function getUnifiedHTML(): string {
 
           // Display
           document.getElementById('planContent').innerHTML = plan.parsed.html;
+
+          // Apply syntax highlighting to code blocks
+          document.querySelectorAll('#planContent pre code').forEach((block) => {
+            hljs.highlightElement(block);
+          });
         }
 
         // ===== TODOS TAB =====
         let currentSession = 'live';
 
         async function loadTodosTab() {
+          // Show live indicator
+          const liveIndicator = document.getElementById('liveIndicator');
+          if (currentSession === 'live') {
+            liveIndicator.style.display = 'inline-block';
+          }
+
           await loadSessions();
           await loadCurrentSession();
         }
 
         function renderTask(task) {
-          const time = task.timestamp
-            ? new Date(task.timestamp).toLocaleTimeString()
-            : '';
+          const now = Date.now();
+          const timestamp = task.timestamp || now;
+          const relativeTime = formatRelativeTime(timestamp);
+
+          // Calculate duration for completed tasks
+          let durationHtml = '';
+          if (task.status === 'completed' && task.timestamp) {
+            durationHtml = \`<span class="task-timestamp-item">⏱️ \${relativeTime}</span>\`;
+          } else if (task.timestamp) {
+            durationHtml = \`<span class="task-timestamp-item">🕐 \${relativeTime}</span>\`;
+          }
 
           return \`
             <div class="task-card \${task.status}">
               <div class="task-content">\${task.content}</div>
               <div class="task-active">\${task.activeForm}</div>
-              \${time ? \`<div class="task-timestamp">\${time}</div>\` : ''}
+              \${durationHtml ? \`<div class="task-timestamp">\${durationHtml}</div>\` : ''}
             </div>
           \`;
         }
@@ -678,6 +797,22 @@ function getUnifiedHTML(): string {
         // Handle session change
         document.getElementById('sessionSelector').addEventListener('change', (e) => {
           currentSession = e.target.value;
+
+          // Update header to show live vs historical
+          const todoHeader = document.getElementById('todoHeader');
+          const liveIndicator = document.getElementById('liveIndicator');
+          const headerText = document.getElementById('todoHeaderText');
+
+          if (currentSession === 'live') {
+            todoHeader.classList.remove('historical');
+            liveIndicator.style.display = 'inline-block';
+            headerText.textContent = 'TodoWrite Kanban';
+          } else {
+            todoHeader.classList.add('historical');
+            liveIndicator.style.display = 'none';
+            headerText.textContent = 'TodoWrite Kanban (Historical)';
+          }
+
           loadCurrentSession();
         });
 
@@ -702,6 +837,16 @@ function getUnifiedHTML(): string {
             console.log('Todo update:', state);
 
             if (currentSession === 'live') {
+              // Check if we're not on todos tab and there are new tasks
+              const activeTab = document.querySelector('.tab-content.active');
+              if (activeTab && activeTab.id === 'plans-tab' && state.tasks.length > 0) {
+                const inProgressCount = state.tasks.filter(t => t.status === 'in_progress').length;
+                if (inProgressCount > 0) {
+                  todoBadgeCount = inProgressCount;
+                  updateTodoBadge(inProgressCount);
+                }
+              }
+
               renderTasks(state);
               updateStats(state);
             }
