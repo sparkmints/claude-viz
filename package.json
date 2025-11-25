@@ -1,6 +1,6 @@
 {
   "name": "claude-viz",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Live web dashboards for Claude Code's planning and task tracking",
   "type": "module",
   "main": "./dist/cli.js",
