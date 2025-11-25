@@ -1,5 +1,8 @@
 # Claude Viz
 
+[![npm version](https://img.shields.io/npm/v/claude-viz.svg)](https://www.npmjs.com/package/claude-viz)
+[![npm downloads](https://img.shields.io/npm/dm/claude-viz.svg)](https://www.npmjs.com/package/claude-viz)
+
 Live web dashboards for monitoring Claude Code's planning and task tracking in real-time.
 
 ![Plans Tab](screenshots/plans-tab.png)
