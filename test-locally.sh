@@ -3,7 +3,7 @@
 
 set -e
 
-echo "🧪 Testing Claude Code Visualizers locally..."
+echo "🧪 Testing Claude Viz locally..."
 echo ""
 
 # Build

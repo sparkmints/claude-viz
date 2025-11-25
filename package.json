@@ -1,6 +1,6 @@
 {
-  "name": "@sparkmint/claude-visualizers",
-  "version": "1.0.0",
+  "name": "@sparkmints/claude-viz",
+  "version": "0.1.0",
   "description": "Live web dashboards for Claude Code's planning and task tracking",
   "main": "./dist/cli.js",
   "bin": {
@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/public dist/",
     "dev": "ts-node src/cli.ts",
     "prepublishOnly": "npm run build"
   },

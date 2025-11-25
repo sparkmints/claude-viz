@@ -54,7 +54,7 @@ if (isNaN(port) || port < 1 || port > 65535) {
 }
 
 // Start unified server
-console.log('Starting Claude Code Visualizers...\n');
+console.log('Starting Claude Viz...\n');
 startServer(port);
 
 // Determine which URL to open

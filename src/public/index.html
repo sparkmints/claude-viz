@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Viz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <h1>👀 Claude Viz</h1>
+    <div class="tabs">
+      <button class="tab-button active" data-tab="plans">📋 Plans</button>
+      <button class="tab-button" data-tab="todos">✅ Todos</button>
+    </div>
+  </div>
+
+  <!-- Plans Tab -->
+  <div id="plans-tab" class="tab-content active">
+    <div class="container plans-container">
+      <div class="sidebar">
+        <h2>Available Plans</h2>
+        <ul class="plan-list" id="planList">
+          <li class="loading">Loading plans...</li>
+        </ul>
+        <div class="plan-outline" id="planOutline" style="display: none;">
+          <h3>Outline</h3>
+          <ul class="outline-list" id="outlineList"></ul>
+        </div>
+      </div>
+      <div class="main-content">
+        <div id="planContent" class="plan-content">
+          <p class="loading">Select a plan to view</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Todos Tab -->
+  <div id="todos-tab" class="tab-content">
+    <div class="container">
+      <div class="todo-header" id="todoHeader">
+        <h2 style="color: #da7756; font-size: 20px; margin: 0;">
+          <span class="live-indicator" id="liveIndicator" style="display: none;"></span>
+          <span id="todoHeaderText">TodoWrite Kanban</span>
+        </h2>
+        <div class="session-selector">
+          <label>Session:</label>
+          <select id="sessionSelector">
+            <option value="live">🔴 Live (Current Session)</option>
+          </select>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card total">
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card in-progress">
+          <div class="stat-value" id="statInProgress">0</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card completed">
+          <div class="stat-value" id="statCompleted">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">0% Complete</div>
+      <div class="kanban">
+        <div class="column pending">
+          <div class="column-header">📝 Pending</div>
+          <div id="columnPending" class="task-list">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+        <div class="column in-progress">
+          <div class="column-header">⚡ In Progress</div>
+          <div id="columnInProgress" class="task-list">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+        <div class="column completed">
+          <div class="column-header">✅ Completed</div>
+          <div id="columnCompleted" class="task-list">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/client.js"></script>
+</body>
+</html>

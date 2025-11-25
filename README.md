@@ -1,4 +1,4 @@
-# Claude Code Visualizers
+# Claude Viz
 
 Live web dashboards for monitoring Claude Code's planning and task tracking in real-time.
 
@@ -6,27 +6,26 @@ Live web dashboards for monitoring Claude Code's planning and task tracking in r
 
 ```bash
 # View unified dashboard with both tools
-npx @sparkmint/claude-visualizers
+npx claude-viz
 
 # Open directly to Plans tab
-npx @sparkmint/claude-visualizers plan
+npx claude-viz plan
 
 # Open directly to Todos tab
-npx @sparkmint/claude-visualizers todo
+npx claude-viz todo
 ```
 
 ## What's Included
 
-Single unified server on port 8888 with two tabs:
+Single unified web app with two tabs:
 
 ### Plans Tab 📋
 - **Watches:** `~/.claude/plans/*.md`
 - **Features:**
   - Live markdown rendering with syntax highlighting
-  - Plan history tracking (last 10 versions)
   - Real-time updates via Server-Sent Events
-  - Sidebar with all available plans
-  - Auto-selects most recent plan
+  - Sidebar to navigate available plans
+  - Outline to navigate sections within a plan
 
 ### Todos Tab ✅
 - **Watches:** `~/.claude/todos/*.json`
@@ -35,18 +34,17 @@ Single unified server on port 8888 with two tabs:
   - Real-time task updates
   - Visual progress tracking with statistics
   - Session history viewer
-  - Completion percentage indicator
 
 ## Installation
 
 ### No Installation Required (npx)
 ```bash
-npx @sparkmint/claude-visualizers
+npx claude-viz
 ```
 
 ### Global Installation (Optional)
 ```bash
-npm install -g @sparkmint/claude-visualizers
+npm install -g claude-viz
 claude-viz              # Unified dashboard
 claude-viz plan         # Focus on Plans
 claude-viz todo         # Focus on Todos
@@ -60,12 +58,12 @@ claude-viz todo         # Focus on Todos
 
 **Using --port flag:**
 ```bash
-npx @sparkmint/claude-visualizers --port 3000
+npx claude-viz --port 3000
 ```
 
 **Using PORT environment variable:**
 ```bash
-PORT=3000 npx @sparkmint/claude-visualizers
+PORT=3000 npx claude-viz
 ```
 
 ### Custom Directories
@@ -126,25 +124,25 @@ Claude Code Visualizers runs a lightweight Express server that:
 ### Basic Usage
 ```bash
 # Start with default settings (port 8888, unified dashboard)
-npx @sparkmint/claude-visualizers
+npx claude-viz
 ```
 
 ### Focus on Specific Tab
 ```bash
 # Open directly to Plans view
-npx @sparkmint/claude-visualizers plan
+npx claude-viz plan
 
 # Open directly to Todos Kanban board
-npx @sparkmint/claude-visualizers todo
+npx claude-viz todo
 ```
 
 ### Custom Port
 ```bash
 # Use port 3000 instead of default 8888
-npx @sparkmint/claude-visualizers --port 3000
+npx claude-viz --port 3000
 
 # Or with environment variable
-PORT=9999 npx @sparkmint/claude-visualizers
+PORT=9999 npx claude-viz
 ```
 
 ### View Historical Sessions
@@ -160,7 +158,7 @@ The Todos tab includes a session selector dropdown:
 
 **Solution:** Use a different port
 ```bash
-npx @sparkmint/claude-visualizers --port 3000
+npx claude-viz --port 3000
 ```
 
 ### No Plans/Todos Showing
