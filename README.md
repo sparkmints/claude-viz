@@ -2,6 +2,10 @@
 
 Live web dashboards for monitoring Claude Code's planning and task tracking in real-time.
 
+![Plans Tab](screenshots/plans-tab.png)
+
+![Todos Tab](screenshots/todos-tab.png)
+
 ## Quick Start
 
 ```bash
@@ -216,9 +220,11 @@ claude-viz/
 │   ├── watchers/
 │   │   ├── plan-watcher.ts  # Plans file watcher
 │   │   └── todo-watcher.ts  # Todos file watcher
-│   └── parsers/
-│       └── markdown.ts      # Markdown to HTML parser
-├── dist/                     # Compiled JavaScript
+│   ├── parsers/
+│   │   └── markdown.ts      # Markdown to HTML parser
+│   └── public/              # Static frontend assets
+├── screenshots/             # README images
+├── dist/                    # Compiled JavaScript
 ├── package.json
 ├── tsconfig.json
 └── README.md
